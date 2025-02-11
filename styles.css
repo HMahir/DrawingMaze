@@ -1,0 +1,75 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: #f0f0f0;
+}
+
+#glavni {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 484px;
+  width: 484px;
+  margin-bottom: 20px;
+}
+
+#slika {
+  width: 484px;
+  height: 484px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 484px;
+  height: 484px;
+  pointer-events: none;
+}
+
+#controls {
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 560px; 
+}
+
+button, #izbira {
+  height: 40px;
+  width: 150px;
+  border-radius: 5px;
+  background-color: blue;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover, #izbira:hover {
+  background-color: darkblue;
+}
+
+#startBtn {
+  width: 160px;
+}
+
+#mazeSwitch {
+  width: 160px;
+}
+
+#izbira {
+  width: 150px;
+}
