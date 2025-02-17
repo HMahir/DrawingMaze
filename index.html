@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polyline Animation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>DRAWING MAZE</h1>
+  <div id="glavni">
+    <canvas id="canvas" width="550" height="550"></canvas>
+    <img src="images/30 by 30 orthogonal maze (5).svg" id="slika">
+    <img src="images/brush.png" id="brush" style="display:none;">
+    <img src="images/erase.png" id="erase" style="display:none;">
+  </div>
+  <div id="controls">
+    <input type="color" id="izbira" value="#ff0000">
+    <button id="speedBtn">Speed: Normal</button>
+    <button id="startBtn">Start Drawing</button>
+    <button id="mazeSwitch">Switch Maze</button>
+    <button id="eraseBtn">Erase Line</button>
+  </div>
+
+  <script>
+    const ORIGINAL_SIZE = 484;  
+    const NEW_SIZE = 550;        
+
+    function scaleValues(values) {
+      return values.map(val => Math.round(val * (NEW_SIZE / ORIGINAL_SIZE)));
+    }
+
+    function scaleMaze(maze) {
+      return {
+        xValues: scaleValues(maze.xValues),
+        yValues: scaleValues(maze.yValues),
+      };
+    }
+    let maze1 = scaleMaze({
+      xValues: [234, 234, 250, 250, 218, 218, 202, 202, 186, 186, 218, 218, 234, 234, 218, 
+        218, 234, 234, 250, 250, 266, 266, 282, 282, 266, 266, 250, 250, 234, 234, 
+        202, 202, 170, 170, 202, 202, 186, 186, 202, 202, 186, 186, 170, 170, 234,
+        234, 218, 218, 202, 202, 186, 186, 170, 170, 154, 154, 138, 138, 122, 122,
+        138, 138, 154, 154, 186, 186, 202, 202, 250, 250],
+      yValues: [2, 10, 10, 26, 26, 10, 10, 26, 26, 42, 42, 74, 74, 90, 90, 106,
+        106, 122, 122, 106, 106, 122, 122, 202, 202, 186, 186, 170, 170, 250, 
+        250, 234, 234, 266, 266, 282, 282, 298, 298, 314, 314, 330, 330, 346, 346,
+        410, 410, 442, 442, 426, 426, 410, 410, 394, 394, 426, 426, 442, 442, 458,
+        458, 474, 474, 442, 442, 458, 458, 474, 474, 482, 482]
+    });
+
+    let maze2 = scaleMaze({
+      xValues: [234, 234, 202, 202, 218, 218, 234, 234, 250, 250, 218, 218, 202, 202, 170, 170, 
+        154, 154, 138, 138, 122, 122, 138, 138, 122, 122, 90, 90, 58, 58, 74, 74, 42, 42, 26, 26, 
+        10, 10, 26, 26, 10, 10, 26, 26, 74, 74, 90, 90, 42, 42, 74, 74, 58, 58, 26, 26, 10, 10, 
+        26, 26, 42, 42, 58, 58, 74, 74, 90, 90, 106, 106, 90, 90, 58, 58, 42, 42, 74, 74, 90, 90, 
+        122, 122, 138, 138, 154, 154, 138, 138, 170, 170, 202, 202, 234, 234],
+      yValues: [2, 10, 10, 26, 26, 42, 42, 58, 58, 74, 74, 58, 58, 74, 74, 90, 
+        90, 154, 154, 138, 138, 122, 122, 74, 74, 58, 58, 90, 90, 74, 74, 58, 58, 42, 42, 58, 58, 
+        154, 154, 186, 186, 250, 250, 218, 218, 202, 202, 234, 234, 250, 250, 282, 282, 330, 330, 
+        346, 346, 394, 394, 410, 410, 394, 394, 426, 426, 442, 442, 394, 394, 346, 346, 362, 362]
+    });
+
+
+    let currentMaze = maze1;
+    let canvas = document.getElementById("canvas");
+    let ctx = canvas.getContext("2d");
+    let brush = document.getElementById("brush");
+    let erase = document.getElementById("erase");
+    let speed = 5;
+    let drawing = false;
+    let index = 0;
+
+    function disableButtons() {
+      document.querySelectorAll("#startBtn, #mazeSwitch").forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+      });
+    }
+
+    function enableButtons() {
+      document.querySelectorAll("#startBtn, #mazeSwitch").forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+      });
+    }
+
+    function animatePath(eraseMode = false) {
+      if (!drawing || index >= currentMaze.xValues.length - 1) {
+        drawing = false;
+        brush.style.display = "none";
+        erase.style.display = "none";
+        if (eraseMode) ctx.globalCompositeOperation = "source-over"; 
+        enableButtons();
+        return;
+      }
+
+      let x1 = currentMaze.xValues[index];
+      let y1 = currentMaze.yValues[index];
+      let x2 = currentMaze.xValues[index + 1];
+      let y2 = currentMaze.yValues[index + 1];
+
+      let dx = x2 - x1;
+      let dy = y2 - y1;
+      let distance = Math.sqrt(dx * dx + dy * dy);
+      let steps = Math.ceil(distance * 2);
+      let stepX = dx / steps;
+      let stepY = dy / steps;
+
+      let i = 0;
+      let tool = eraseMode ? erase : brush;
+
+      tool.style.display = "block";
+      tool.style.left = `${x1}px`;
+      tool.style.top = `${y1}px`;
+
+      if (eraseMode) ctx.globalCompositeOperation = "destination-out";
+
+      function stepAnimation() {
+        if (!drawing) return;
+
+        if (i <= steps) {
+          let nextX = x1 + stepX * i;
+          let nextY = y1 + stepY * i;
+
+          tool.style.left = `${nextX}px`;
+          tool.style.top = `${nextY}px`;
+
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(nextX, nextY);
+          ctx.strokeStyle = eraseMode ? "white" : document.getElementById("izbira").value;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          i++;
+          setTimeout(stepAnimation, speed);
+        } else {
+          index++;
+          requestAnimationFrame(() => animatePath(eraseMode));
+        }
+      }
+      stepAnimation();
+    }
+
+    document.getElementById("speedBtn").addEventListener("click", function () {
+      if (speed === 5) {
+        speed = 0.5;
+        this.textContent = "Speed: Fast";
+      } else if (speed === 0.5) {
+        speed = 15;
+        this.textContent = "Speed: Slow";
+      } else {
+        speed = 5;
+        this.textContent = "Speed: Normal";
+      }
+    });
+
+    document.getElementById("startBtn").addEventListener("click", function () {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      index = 0;
+      drawing = true;
+      disableButtons();
+      animatePath(false);
+    });
+
+    document.getElementById("mazeSwitch").addEventListener("click", function () {
+      if (drawing) return;
+      currentMaze = currentMaze === maze1 ? maze2 : maze1;
+      document.getElementById("slika").src = currentMaze === maze1 ? "images/30 by 30 orthogonal maze (5).svg" : "images/maze2.svg";
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      speed = 5;
+      document.getElementById("speedBtn").textContent = "Speed: Normal";
+      index = 0;
+      enableButtons();
+    });
+
+    document.getElementById("eraseBtn").addEventListener("click", function () {
+      if (drawing) return;
+      index = 0;
+      drawing = true;
+      disableButtons();
+      animatePath(true);
+    });
+
+  </script>
+</body>
+</html>
