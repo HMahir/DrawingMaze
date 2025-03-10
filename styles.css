@@ -1,0 +1,159 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-image: url("images/ozadje2.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+h1 {
+  position: absolute;
+  text-align: center;
+  font-size: 3rem;  
+  font-weight: bold;
+  color: #ef7f68;
+  top: 50px;
+}
+/* Main container */
+#container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  bottom: -30px; 
+  left: 70px;
+}
+
+/* Maze drawing area */
+#glavni {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 780px;
+  width: 780px; 
+  position: relative;
+  background-color: #f1d5ad;
+}
+
+#slika {
+  width:780px;
+  height: 780px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 780px;
+  height:780px;
+  pointer-events: none;
+}
+
+#brush, #erase, #artist {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  display: none;
+}
+
+/* Controls container */
+#kvadrat {
+  height: 650px;  
+  width: 400px;
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  justify-content: space-between; /* Space between elements */
+  align-items: center;
+  border: 1px solid black;
+  background-color: #f1d5ad;
+  padding: 20px;
+}
+
+/* Controls */
+#controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+/* Speed range in a single row */
+#speedControl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#speedRange {
+  width: 150px;
+}
+/* Buttons */
+button, #izbira {
+  height: 60px;
+  width: 120px;
+  border-radius: 5px;
+  background-color: #f1710c;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+button:hover, #izbira:hover {
+  background-color: #f1710c;
+}
+
+#easyBtn.active, #mediumBtn.active, #hardBtn.active {
+  background-color: #8c3737; /* Blue color to indicate selection */
+  color: white;
+  font-weight: bold;
+}
+
+/* Erase button with image */
+#eraseBtn {
+  height: 80px;
+  width: 80px;
+  position: relative;
+  top:90px;
+}
+#getInspirationBtn{
+  position: relative;
+  top: 70px;
+}
+#hardBtn{
+  position: relative;
+  top: 50px;
+}
+#mediumBtn{
+  position: relative;
+  bottom: -30px;
+}
+#easyBtn{
+  position: relative;
+  bottom: -10px;
+}
+
+#eraseBtn img {
+  width: 50px;
+  height: 50px;
+}
+/* Ensure start button is at the bottom */
+#startBtn {
+  margin-top: auto; /* Push it to the bottom */
+  width: 100%;
+}
